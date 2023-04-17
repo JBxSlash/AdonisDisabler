@@ -1,30 +1,33 @@
 local module = {}
 local function detectAdonis()
-    for i, v in pairs(game.ReplicatedStorage:GetChildren()) do
+        for i, v in pairs(game.ReplicatedStorage:GetChildren()) do
         if v:IsA("RemoteEvent") then
             if v:FindFirstChild("__FUNCTION") then
-                game:GetService("DebrisService"):AddItem(v,0)
-                local oldInx 
-                oldInx = hookmetamethod(game, "__namecall", newcclosure(function(...)
-                local args = {...}
-                local self = args[1]
-                    if string.lower(tostring(getnamecallmethod())) == "kick" and string.lower(tostring(self)) == string.lower(game.Players.LocalPlayer.Name) then
-                        return wait(math.huge)
-                    end
-                    return oldInx(Self,key)
-                end))
-
-                StarterGui:SetCore("SendNotification", {
+                v:Destroy()
+				local LocalPlayer = game.Players.LocalPlayer
+	local oldhmmi
+	local oldhmmnc
+	oldhmmi = hookmetamethod(game, "__index", function(self, method)
+		if self == LocalPlayer and string.lower(method) == "kick" then
+			return error("Expected ':' not '.' calling member function Kick", 2)
+		end
+		return oldhmmi(self, method)
+	end)
+	oldhmmnc = hookmetamethod(game, "__namecall", function(self, ...)
+		if self == LocalPlayer and string.lower(getnamecallmethod()) == "kick" then
+			return wait(inf)
+		end
+		return oldhmmnc(self, ...)
+	end)
+				                StarterGui:SetCore("SendNotification", {
 		Title = "JBX Slash",
 		Text = "Anti-Kick script loaded!",
-		Icon = "rbxassetid://6238537240",
 		Duration = 3,
 	})
-                return true
             end
         end
     end
-    return false
+	
 end
 
 
